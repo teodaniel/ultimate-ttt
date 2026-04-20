@@ -13,6 +13,7 @@ interface GameStore {
   mySymbol: CellValue;
 
   newGame: () => void;
+  setGame: (game: GameState) => void;
   setMode: (mode: "hotseat" | "online") => void;
   setMySymbol: (symbol: CellValue) => void;
   makeMove: (boardIndex: BoardIndex, cellIndex: CellIndex) => boolean;
@@ -36,6 +37,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   mySymbol: null,
 
   newGame: () => set({ game: createInitialState() }),
+  setGame: (game) => set({ game }),
   setMode: (mode) => set({ mode }),
   setMySymbol: (symbol) => set({ mySymbol: symbol }),
 

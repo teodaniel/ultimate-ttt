@@ -17,6 +17,7 @@ export function Game({ onBackToLobby, joinId }: GameProps) {
   const newGame = useGameStore((state) => state.newGame);
   const applyRemoteMove = useGameStore((state) => state.applyRemoteMove);
   const setMySymbol = useGameStore((state) => state.setMySymbol);
+  const setGame = useGameStore((state) => state.setGame);
 
   const isOnline = mode === "online";
   const isHost = isOnline && !joinId;
@@ -25,13 +26,15 @@ export function Game({ onBackToLobby, joinId }: GameProps) {
     (msg: NetMessage) => {
       if (msg.type === "HELLO") {
         setMySymbol(msg.payload.mark);
+      } else if (msg.type === "SYNC") {
+        setGame(msg.payload.game);
       } else if (msg.type === "MOVE") {
         applyRemoteMove(msg.payload.boardIndex, msg.payload.cellIndex);
       } else if (msg.type === "NEW_GAME") {
         newGame();
       }
     },
-    [applyRemoteMove, setMySymbol, newGame],
+    [applyRemoteMove, setMySymbol, setGame, newGame],
   );
 
   const peer = usePeer(isOnline, joinId ?? null, handleMessage);

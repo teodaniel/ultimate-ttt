@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import type { NetMessage } from "./messages";
+import { useGameStore } from "../store/gameStore";
 
 export type ConnectionStatus =
   | "idle"
@@ -72,8 +73,9 @@ export function usePeer(
             connRef.current = conn;
             conn.on("open", () => {
               setConnectionStatus("connected");
-              // Assign guest as O
               conn.send({ type: "HELLO", payload: { mark: "O" } } satisfies NetMessage);
+              // Send current board state so a rejoining guest is always in sync
+              conn.send({ type: "SYNC", payload: { game: useGameStore.getState().game } } satisfies NetMessage);
             });
             conn.on("data", (data: unknown) =>
               onMessageRef.current(data as NetMessage),
