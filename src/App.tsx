@@ -1,9 +1,7 @@
+import { Game } from "./components/Game";
+
 function App() {
-  return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-      <h1 className="text-3xl font-bold text-gray-800">Ultimate Tic-Tac-Toe</h1>
-    </div>
-  )
+  return <Game />;
 }
 
-export default App
+export default App;
