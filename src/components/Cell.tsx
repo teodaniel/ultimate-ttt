@@ -34,7 +34,7 @@ export function Cell({ boardIndex, cellIndex, value, disabled, isLastMove }: Cel
     }
   }
 
-  const base = "aspect-square w-full flex items-center justify-center text-lg font-bold rounded-sm transition-colors";
+  const base = "aspect-square w-full flex items-center justify-center rounded-sm transition-colors";
   const bg = isLastMove
     ? "bg-yellow-100"
     : value === null && !isDisabled
@@ -46,6 +46,7 @@ export function Cell({ boardIndex, cellIndex, value, disabled, isLastMove }: Cel
   return (
     <button
       className={`${base} ${bg} ${color} ${border}`}
+      style={{ fontFamily: "'Fredoka One', cursive", fontSize: "clamp(0.9rem, 4.5vw, 1.6rem)", lineHeight: 1 }}
       disabled={isDisabled}
       onClick={handleClick}
       aria-label={`Board ${boardIndex}, cell ${cellIndex}${value ? `: ${value}` : ""}`}
