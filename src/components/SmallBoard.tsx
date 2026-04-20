@@ -13,6 +13,12 @@ const overlayColor: Record<string, string> = {
   draw: "text-slate-400",
 };
 
+const winnerRing: Record<string, string> = {
+  X: "ring-2 ring-blue-500",
+  O: "ring-2 ring-red-500",
+  draw: "ring-2 ring-slate-400",
+};
+
 export function SmallBoard({ boardIndex, isActive }: SmallBoardProps) {
   const board = useGameStore((state) => state.game.boards[boardIndex]);
   const gameWinner = useGameStore((state) => state.game.winner);
@@ -22,11 +28,12 @@ export function SmallBoard({ boardIndex, isActive }: SmallBoardProps) {
   const cellDisabled = !isActive || isCompleted || gameWinner !== null;
 
   const containerBase = "relative p-1 rounded transition-all";
-  const activeBg = isActive ? "ring-2 ring-blue-400 bg-blue-50/40 dark:bg-blue-900/30" : "";
+  const activeBg = isActive && !isCompleted ? "ring-2 ring-blue-400 bg-blue-50/40 dark:bg-blue-900/30" : "";
+  const completedRing = isCompleted ? winnerRing[board.winner!] : "";
   const dimmed = isCompleted && !isActive ? "opacity-60" : "";
 
   return (
-    <div className={`${containerBase} ${activeBg} ${dimmed}`}>
+    <div className={`${containerBase} ${activeBg} ${completedRing} ${dimmed}`}>
       <div className="grid grid-cols-3 gap-0.5">
         {board.cells.map((value, cellIndex) => (
           <Cell
@@ -45,8 +52,8 @@ export function SmallBoard({ boardIndex, isActive }: SmallBoardProps) {
 
       {isCompleted && (
         <div
-          className={`absolute inset-0 flex items-center justify-center text-5xl font-black pointer-events-none select-none ${overlayColor[board.winner!]} opacity-40`}
-          style={{ fontFamily: "'Fredoka One', cursive" }}
+          className={`absolute inset-0 flex items-center justify-center font-black pointer-events-none select-none ${overlayColor[board.winner!]}`}
+          style={{ fontFamily: "'Fredoka One', cursive", fontSize: "clamp(2rem, 10vw, 3.5rem)", opacity: 0.8 }}
         >
           {board.winner === "draw" ? "–" : board.winner}
         </div>
