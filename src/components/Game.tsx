@@ -2,7 +2,11 @@ import { useGameStore } from "../store/gameStore";
 import { BigBoard } from "./BigBoard";
 import { GameStatus } from "./GameStatus";
 
-export function Game() {
+interface GameProps {
+  onBackToLobby: () => void;
+}
+
+export function Game({ onBackToLobby }: GameProps) {
   const newGame = useGameStore((state) => state.newGame);
 
   return (
@@ -12,12 +16,20 @@ export function Game() {
       </h1>
       <GameStatus />
       <BigBoard />
-      <button
-        className="px-5 py-2 bg-slate-800 text-white rounded-lg font-medium hover:bg-slate-700 active:scale-95 transition-all"
-        onClick={newGame}
-      >
-        New Game
-      </button>
+      <div className="flex gap-3">
+        <button
+          className="px-5 py-2 bg-slate-800 text-white rounded-lg font-medium hover:bg-slate-700 active:scale-95 transition-all"
+          onClick={newGame}
+        >
+          New Game
+        </button>
+        <button
+          className="px-5 py-2 border border-slate-300 text-slate-600 rounded-lg font-medium hover:bg-slate-100 active:scale-95 transition-all"
+          onClick={onBackToLobby}
+        >
+          Back to Lobby
+        </button>
+      </div>
     </div>
   );
 }
