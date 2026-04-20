@@ -6,18 +6,34 @@ interface CellProps {
   cellIndex: CellIndex;
   value: CellValue;
   disabled: boolean;
+  isLastMove: boolean;
 }
 
-export function Cell({ boardIndex, cellIndex, value, disabled }: CellProps) {
+const markColor: Record<string, string> = {
+  X: "text-blue-600",
+  O: "text-red-500",
+};
+
+export function Cell({ boardIndex, cellIndex, value, disabled, isLastMove }: CellProps) {
   const makeMove = useGameStore((state) => state.makeMove);
+
+  const base = "aspect-square w-full flex items-center justify-center text-lg font-bold rounded-sm transition-colors";
+  const bg = isLastMove
+    ? "bg-yellow-100"
+    : value === null && !disabled
+    ? "bg-white hover:bg-blue-50 cursor-pointer"
+    : "bg-white";
+  const color = value ? markColor[value] : "text-transparent";
+  const border = "border border-slate-300";
 
   return (
     <button
-      className="w-10 h-10 border border-gray-400 text-lg font-bold disabled:cursor-not-allowed"
+      className={`${base} ${bg} ${color} ${border}`}
       disabled={disabled || value !== null}
       onClick={() => makeMove(boardIndex, cellIndex)}
+      aria-label={`Board ${boardIndex}, cell ${cellIndex}${value ? `: ${value}` : ""}`}
     >
-      {value}
+      {value ?? ""}
     </button>
   );
 }

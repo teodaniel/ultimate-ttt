@@ -13,7 +13,7 @@ export function BigBoard() {
   }
 
   return (
-    <div className="grid grid-cols-3 gap-2 border-2 border-gray-700 p-2">
+    <div className="grid grid-cols-3 gap-3 p-3 bg-slate-700 rounded-lg w-full max-w-[480px]">
       {boards.map((_, boardIndex) => (
         <SmallBoard
           key={boardIndex}

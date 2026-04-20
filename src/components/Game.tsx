@@ -6,12 +6,14 @@ export function Game() {
   const newGame = useGameStore((state) => state.newGame);
 
   return (
-    <div className="flex flex-col items-center gap-4 p-6">
-      <h1 className="text-2xl font-bold">Ultimate Tic-Tac-Toe</h1>
+    <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center px-4 py-8 gap-6">
+      <h1 className="text-3xl font-bold text-slate-800 tracking-tight">
+        Ultimate Tic-Tac-Toe
+      </h1>
       <GameStatus />
       <BigBoard />
       <button
-        className="mt-4 px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-700"
+        className="px-5 py-2 bg-slate-800 text-white rounded-lg font-medium hover:bg-slate-700 active:scale-95 transition-all"
         onClick={newGame}
       >
         New Game
