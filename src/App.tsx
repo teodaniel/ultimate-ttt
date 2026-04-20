@@ -1,27 +1,29 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useGameStore } from "./store/gameStore";
 import { Lobby } from "./components/Lobby";
 import { Game } from "./components/Game";
 
 type Screen = "lobby" | "game";
 
-export default function App() {
-  const [screen, setScreen] = useState<Screen>("lobby");
-  const setMode = useGameStore((state) => state.setMode);
-  const newGame = useGameStore((state) => state.newGame);
+// Read once at module load — URL params don't change during the session
+const initialJoinId = new URLSearchParams(window.location.search).get("join");
 
-  // Auto-join if URL contains ?join=<peerId>
-  useEffect(() => {
-    const joinId = new URLSearchParams(window.location.search).get("join");
-    if (joinId) {
-      setMode("online");
-      newGame();
-      setScreen("game");
-    }
-  }, [setMode, newGame]);
+// Prime the store synchronously before first render if joining via URL
+if (initialJoinId) {
+  useGameStore.setState({ mode: "online" });
+}
+
+export default function App() {
+  const [screen, setScreen] = useState<Screen>(initialJoinId ? "game" : "lobby");
+  const [joinId] = useState<string | null>(initialJoinId);
 
   if (screen === "game") {
-    return <Game onBackToLobby={() => setScreen("lobby")} />;
+    return (
+      <Game
+        onBackToLobby={() => setScreen("lobby")}
+        joinId={joinId}
+      />
+    );
   }
 
   return <Lobby onStartGame={() => setScreen("game")} />;

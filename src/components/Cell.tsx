@@ -1,4 +1,5 @@
 import { useGameStore } from "../store/gameStore";
+import { usePeerContext } from "../net/PeerContext";
 import type { BoardIndex, CellIndex, CellValue } from "../game/types";
 
 interface CellProps {
@@ -16,11 +17,27 @@ const markColor: Record<string, string> = {
 
 export function Cell({ boardIndex, cellIndex, value, disabled, isLastMove }: CellProps) {
   const makeMove = useGameStore((state) => state.makeMove);
+  const mode = useGameStore((state) => state.mode);
+  const mySymbol = useGameStore((state) => state.mySymbol);
+  const currentPlayer = useGameStore((state) => state.game.currentPlayer);
+  const { send, connectionStatus } = usePeerContext();
+
+  const isMyTurn = mode === "hotseat" || currentPlayer === mySymbol;
+  const isConnected = mode === "hotseat" || connectionStatus === "connected";
+  const isDisabled = disabled || value !== null || !isMyTurn || !isConnected;
+
+  function handleClick() {
+    if (isDisabled) return;
+    const applied = makeMove(boardIndex, cellIndex);
+    if (applied && mode === "online") {
+      send({ type: "MOVE", payload: { boardIndex, cellIndex } });
+    }
+  }
 
   const base = "aspect-square w-full flex items-center justify-center text-lg font-bold rounded-sm transition-colors";
   const bg = isLastMove
     ? "bg-yellow-100"
-    : value === null && !disabled
+    : value === null && !isDisabled
     ? "bg-white hover:bg-blue-50 cursor-pointer"
     : "bg-white";
   const color = value ? markColor[value] : "text-transparent";
@@ -29,8 +46,8 @@ export function Cell({ boardIndex, cellIndex, value, disabled, isLastMove }: Cel
   return (
     <button
       className={`${base} ${bg} ${color} ${border}`}
-      disabled={disabled || value !== null}
-      onClick={() => makeMove(boardIndex, cellIndex)}
+      disabled={isDisabled}
+      onClick={handleClick}
       aria-label={`Board ${boardIndex}, cell ${cellIndex}${value ? `: ${value}` : ""}`}
     >
       {value ?? ""}
