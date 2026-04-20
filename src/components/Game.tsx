@@ -19,6 +19,7 @@ export function Game({ onBackToLobby, joinId }: GameProps) {
   const setMySymbol = useGameStore((state) => state.setMySymbol);
 
   const isOnline = mode === "online";
+  const isHost = isOnline && !joinId;
 
   const handleMessage = useCallback(
     (msg: NetMessage) => {
@@ -35,8 +36,6 @@ export function Game({ onBackToLobby, joinId }: GameProps) {
 
   const peer = usePeer(isOnline, joinId ?? null, handleMessage);
 
-  const isHost = isOnline && !joinId;
-
   // Host is always X; set mySymbol once the peer ID is assigned
   useEffect(() => {
     if (isHost && peer.myPeerId) {
@@ -44,9 +43,15 @@ export function Game({ onBackToLobby, joinId }: GameProps) {
     }
   }, [isHost, peer.myPeerId, setMySymbol]);
 
+  const isDisconnected =
+    isOnline &&
+    (peer.connectionStatus === "disconnected" || peer.connectionStatus === "error");
+
   function handleNewGame() {
     newGame();
-    if (isOnline) peer.send({ type: "NEW_GAME" });
+    if (isOnline && peer.connectionStatus === "connected") {
+      peer.send({ type: "NEW_GAME" });
+    }
   }
 
   function handleBackToLobby() {
@@ -62,7 +67,15 @@ export function Game({ onBackToLobby, joinId }: GameProps) {
         </h1>
         <GameStatus />
         {isHost && peer.connectionStatus !== "connected" && <ShareLink />}
+
+        {isDisconnected && (
+          <div className="w-full max-w-[480px] rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700 text-center">
+            {peer.error ?? "Opponent disconnected. You can start a new game or go back to the lobby."}
+          </div>
+        )}
+
         <BigBoard />
+
         <div className="flex gap-3">
           <button
             className="px-5 py-2 bg-slate-800 text-white rounded-lg font-medium hover:bg-slate-700 active:scale-95 transition-all"

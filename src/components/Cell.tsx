@@ -22,9 +22,9 @@ export function Cell({ boardIndex, cellIndex, value, disabled, isLastMove }: Cel
   const currentPlayer = useGameStore((state) => state.game.currentPlayer);
   const { send, connectionStatus } = usePeerContext();
 
+  const isReady = mode === "hotseat" || (connectionStatus === "connected" && mySymbol !== null);
   const isMyTurn = mode === "hotseat" || currentPlayer === mySymbol;
-  const isConnected = mode === "hotseat" || connectionStatus === "connected";
-  const isDisabled = disabled || value !== null || !isMyTurn || !isConnected;
+  const isDisabled = disabled || value !== null || !isReady || !isMyTurn;
 
   function handleClick() {
     if (isDisabled) return;
