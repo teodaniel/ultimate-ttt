@@ -2,34 +2,32 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Project summary
+
+Web-based Ultimate Tic-Tac-Toe with local hot-seat and peer-to-peer online multiplayer. No backend — PeerJS handles WebRTC signaling. Game logic is pure TypeScript, fully unit-tested, and completely decoupled from React.
+
 ## Commands
 
 ```bash
-npm run dev        # Start dev server (Vite HMR)
-npm run build      # Type-check + build for production
-npm run lint       # Run ESLint
-npm run preview    # Preview production build
-npx vitest         # Run all tests
-npx vitest run src/path/to/file.test.tsx  # Run a single test file
+npm run dev      # start dev server
+npm run build    # type-check + production build
+npm run lint     # ESLint
+npm test         # run all tests (Vitest)
+npm test -- --run src/game/logic.test.ts  # single test file
 ```
 
-## Tech Stack
+## Architecture rules
 
-- **React 19** + **TypeScript** — UI
-- **Vite 8** — bundler/dev server
-- **Zustand** — global state management
-- **PeerJS** — WebRTC peer-to-peer multiplayer
-- **Tailwind CSS 4** — styling via `@tailwindcss/postcss` in `postcss.config.js`; CSS entry uses `@import "tailwindcss"`
-- **Vitest 4** + **@testing-library/react** — testing; configured in `vite.config.ts` via `vitest/config`'s `defineConfig`, jsdom environment, globals enabled
+- `src/game/` is pure TypeScript — zero imports from React, Zustand, or PeerJS. This is a hard rule; verify before touching those files.
+- All game logic functions are pure (no mutation, no side effects). State transitions happen only in `src/store/gameStore.ts`.
+- The Zustand store never calls `peer.send`. Sending is always the responsibility of the component that called `makeMove`.
+- `makeMove` and `applyRemoteMove` in the store are intentionally separate — same implementation, different semantic meaning for the network layer.
+- URL params (`?join=`) are read at module level in `App.tsx`, not inside a `useEffect`, to avoid cascading render issues.
 
-## Architecture
+## Known gotchas
 
-This is Ultimate Tic-Tac-Toe — a 3×3 grid of 3×3 boards where the small board you must play in is determined by your opponent's last move.
-
-State is managed with **Zustand** stores (to be built in `src/store/`). Game logic lives separately from UI components so it can be unit-tested without rendering. PeerJS handles the P2P connection layer for online play.
-
-Source lives entirely under `src/`. The entry point is [src/main.tsx](src/main.tsx) → [src/App.tsx](src/App.tsx).
-
-## TypeScript Config Notes
-
-`tsconfig.app.json` enforces `noUnusedLocals`, `noUnusedParameters`, and `erasableSyntaxOnly`. Avoid `enum` — use `const` objects or union types instead.
+- **Tailwind v4** does not use `tailwindcss` directly as a PostCSS plugin. It requires `@tailwindcss/postcss` as a separate package, and the CSS entry point uses `@import "tailwindcss"` rather than the v3 `@tailwind` directives.
+- **Vitest v4** config must use `defineConfig` imported from `vitest/config`, not from `vite`. Using `vite`'s `defineConfig` will reject the `test` field.
+- **ESLint** does not respect the `_` prefix for unused parameters by default — `@typescript-eslint/no-unused-vars` needs `argsIgnorePattern: "^_"` set explicitly in `eslint.config.js`. TypeScript itself does respect the prefix natively.
+- **Ref updates during render** are flagged by the `react-hooks/refs` rule. The `onMessageRef.current = value` pattern must be inside a `useEffect`, not at the top level of the hook body.
+- **Calling setState inside useEffect** is flagged by `react-hooks/set-state-in-effect`. Initialization from URL params should happen at module scope or via lazy `useState` initializers, not in an effect.

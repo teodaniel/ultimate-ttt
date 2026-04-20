@@ -1,73 +1,38 @@
-# React + TypeScript + Vite
+# Ultimate Tic-Tac-Toe
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A web-based Ultimate Tic-Tac-Toe game with local hot-seat play and peer-to-peer online multiplayer — no backend, no accounts.
 
-Currently, two official plugins are available:
+## How to play
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Ultimate Tic-Tac-Toe is played on a 3×3 grid of 3×3 boards (81 cells total). Two players take turns: **X** goes first.
 
-## React Compiler
+**The twist:** the cell you play in determines which small board your opponent must play in next. Play in the top-right cell of any board, and your opponent must play in the top-right board.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- If you're sent to a board that's already won or full, you can play in any open board.
+- Win a small board by getting three in a row on it (standard tic-tac-toe).
+- Win the game by winning three small boards in a row on the big board.
+- A full board with no winner is a draw and counts for neither player.
 
-## Expanding the ESLint configuration
+## Modes
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **Local (hot-seat)** — two players on the same device, taking turns.
+- **Online** — create a game, share the invite link, and play against someone on a different device over a direct peer-to-peer connection.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Running locally
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Other commands:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run build    # production build
+npm run lint     # ESLint
+npm test         # run all tests
 ```
+
+## Tech stack
+
+React 19 · TypeScript · Vite · Zustand · PeerJS · Tailwind CSS 4 · Vitest
