@@ -22,7 +22,7 @@ export function SmallBoard({ boardIndex, isActive }: SmallBoardProps) {
   const cellDisabled = !isActive || isCompleted || gameWinner !== null;
 
   const containerBase = "relative p-1 rounded transition-all";
-  const activeBg = isActive ? "ring-2 ring-blue-400 bg-blue-50/40" : "";
+  const activeBg = isActive ? "ring-2 ring-blue-400 bg-blue-50/40 dark:bg-blue-900/30" : "";
   const dimmed = isCompleted && !isActive ? "opacity-60" : "";
 
   return (
@@ -46,6 +46,7 @@ export function SmallBoard({ boardIndex, isActive }: SmallBoardProps) {
       {isCompleted && (
         <div
           className={`absolute inset-0 flex items-center justify-center text-5xl font-black pointer-events-none select-none ${overlayColor[board.winner!]} opacity-40`}
+          style={{ fontFamily: "'Fredoka One', cursive" }}
         >
           {board.winner === "draw" ? "–" : board.winner}
         </div>

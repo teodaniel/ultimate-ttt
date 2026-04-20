@@ -52,13 +52,13 @@ export function GameStatus() {
   return (
     <div className="text-center flex flex-col items-center gap-1" style={{ minHeight: "4rem" }}>
       {game.winner ? (
-        <p className={`text-2xl font-bold ${game.winner !== "draw" ? markColor[game.winner] : "text-slate-600"}`}>
+        <p className={`text-2xl font-bold ${game.winner !== "draw" ? markColor[game.winner] : "text-slate-600 dark:text-slate-400"}`}>
           {game.winner === "draw" ? "It's a draw!" : `${game.winner} wins!`}
         </p>
       ) : (
         <>
-          <p className="text-lg font-semibold">{turnLabel()}</p>
-          <p className="text-sm text-slate-500">
+          <p className="text-lg font-semibold text-slate-800 dark:text-slate-100">{turnLabel()}</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">
             {game.activeBoard === null
               ? "Free move — play in any open board"
               : `Must play in the ${BOARD_NAMES[game.activeBoard]} board`}
