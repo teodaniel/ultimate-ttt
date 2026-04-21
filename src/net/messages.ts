@@ -5,4 +5,5 @@ export type NetMessage =
   | { type: "SYNC"; payload: { game: GameState } }
   | { type: "MOVE"; payload: { boardIndex: number; cellIndex: number } }
   | { type: "NEW_GAME" }
-  | { type: "RESIGN" };
+  | { type: "RESIGN" }
+  | { type: "TIMER_CONFIG"; payload: { enabled: boolean; limitSeconds: number } };
