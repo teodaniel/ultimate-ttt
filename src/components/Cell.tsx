@@ -22,9 +22,10 @@ export function Cell({ boardIndex, cellIndex, value, disabled, isLastMove }: Cel
   const currentPlayer = useGameStore((state) => state.game.currentPlayer);
   const { send, connectionStatus } = usePeerContext();
 
+  const isFrozen = useGameStore((state) => state.frozen);
   const isReady = mode === GameMode.Hotseat || (connectionStatus === "connected" && mySymbol !== null);
   const isMyTurn = mode === GameMode.Hotseat || currentPlayer === mySymbol;
-  const isDisabled = disabled || value !== null || !isReady || !isMyTurn;
+  const isDisabled = disabled || value !== null || !isReady || !isMyTurn || isFrozen;
 
   function handleClick() {
     if (isDisabled) return;
@@ -36,9 +37,9 @@ export function Cell({ boardIndex, cellIndex, value, disabled, isLastMove }: Cel
 
   const base = "aspect-square w-full flex items-center justify-center rounded-sm transition-colors";
   const bg = isLastMove
-    ? "bg-yellow-100 dark:bg-amber-900/40"
+    ? "bg-yellow-100 dark:bg-yellow-500/25"
     : value === null && !isDisabled
-    ? "bg-white dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-900/30 cursor-pointer"
+    ? "bg-white dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-700/40 cursor-pointer"
     : "bg-white dark:bg-slate-800";
   const color = value ? markColor[value] : "text-transparent";
   const border = "border border-slate-300 dark:border-slate-600";

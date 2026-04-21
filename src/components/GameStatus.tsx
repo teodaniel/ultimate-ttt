@@ -65,6 +65,12 @@ export function GameStatus() {
           </p>
         </>
       )}
+      {isOnline && mySymbol && (
+        <p className="text-xs text-slate-500 dark:text-slate-400">
+          You are playing as{" "}
+          <span className={`font-bold ${markColor[mySymbol]}`}>{mySymbol}</span>
+        </p>
+      )}
       {isOnline && (
         <p className={`text-xs ${statusColor[connectionStatus] ?? "text-slate-400"}`}>
           {error ?? statusLabel[connectionStatus]}

@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useGameStore, GameMode } from "../store/gameStore";
 import { usePeer } from "../net/usePeer";
 import { PeerContext } from "../net/PeerContext";
@@ -6,6 +6,7 @@ import type { NetMessage } from "../net/messages";
 import { BigBoard } from "./BigBoard";
 import { GameStatus } from "./GameStatus";
 import { ShareLink } from "./ShareLink";
+import { ConfirmDialog } from "./ConfirmDialog";
 
 interface GameProps {
   onBackToLobby: () => void;
@@ -18,6 +19,8 @@ export function Game({ onBackToLobby, joinId }: GameProps) {
   const applyRemoteMove = useGameStore((state) => state.applyRemoteMove);
   const setMySymbol = useGameStore((state) => state.setMySymbol);
   const setGame = useGameStore((state) => state.setGame);
+  const setMode = useGameStore((state) => state.setMode);
+  const setFrozen = useGameStore((state) => state.setFrozen);
 
   const isOnline = mode === GameMode.Online;
   const isHost = isOnline && !joinId;
@@ -39,26 +42,36 @@ export function Game({ onBackToLobby, joinId }: GameProps) {
 
   const peer = usePeer(isOnline, joinId ?? null, handleMessage);
 
-  useEffect(() => {
-    if (isHost && peer.myPeerId) {
-      setMySymbol("X");
-    }
-  }, [isHost, peer.myPeerId, setMySymbol]);
+  const [confirm, setConfirm] = useState<{ message: string; action: () => void } | null>(null);
 
   const isDisconnected =
     isOnline &&
     (peer.connectionStatus === "disconnected" || peer.connectionStatus === "error");
 
+  useEffect(() => {
+    setFrozen(isDisconnected);
+  }, [isDisconnected, setFrozen]);
+
   function handleNewGame() {
-    newGame();
-    if (isOnline && peer.connectionStatus === "connected") {
-      peer.send({ type: "NEW_GAME" });
-    }
+    setConfirm({
+      message: "Start a new game? Current game progress will be lost.",
+      action: () => {
+        newGame();
+        if (isOnline && peer.connectionStatus === "connected") {
+          peer.send({ type: "NEW_GAME" });
+        }
+      },
+    });
   }
 
   function handleBackToLobby() {
-    setMySymbol(null);
-    onBackToLobby();
+    setConfirm({
+      message: "Go back to the lobby? Current game progress will be lost.",
+      action: () => {
+        setMySymbol(null);
+        onBackToLobby();
+      },
+    });
   }
 
   return (
@@ -71,8 +84,24 @@ export function Game({ onBackToLobby, joinId }: GameProps) {
         {isHost && peer.connectionStatus !== "connected" && <ShareLink />}
 
         {isDisconnected && (
-          <div className="w-full max-w-[480px] rounded-lg bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 px-4 py-3 text-sm text-red-700 dark:text-red-300 text-center">
-            {peer.error ?? "Opponent disconnected. You can start a new game or go back to the lobby."}
+          <div className="w-full max-w-[480px] rounded-lg bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 px-4 py-4 flex flex-col items-center gap-3">
+            <p className="text-sm text-red-700 dark:text-red-300 text-center">
+              {peer.error ?? "Opponent disconnected."}
+            </p>
+            <div className="flex gap-2">
+              <button
+                className="px-4 py-1.5 bg-slate-800 dark:bg-slate-200 text-white dark:text-slate-900 rounded-lg text-sm font-medium hover:bg-slate-700 dark:hover:bg-slate-300 active:scale-95 transition-all"
+                onClick={() => { newGame(); setMode(GameMode.Hotseat); setMySymbol(null); }}
+              >
+                New local game
+              </button>
+              <button
+                className="px-4 py-1.5 border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 rounded-lg text-sm font-medium hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-95 transition-all"
+                onClick={() => { setMySymbol(null); onBackToLobby(); }}
+              >
+                Back to lobby
+              </button>
+            </div>
           </div>
         )}
 
@@ -93,6 +122,14 @@ export function Game({ onBackToLobby, joinId }: GameProps) {
           </button>
         </div>
       </div>
+
+      {confirm && (
+        <ConfirmDialog
+          message={confirm.message}
+          onConfirm={() => { confirm.action(); setConfirm(null); }}
+          onCancel={() => setConfirm(null)}
+        />
+      )}
     </PeerContext.Provider>
   );
 }

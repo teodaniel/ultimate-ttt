@@ -17,11 +17,13 @@ interface GameStore {
   game: GameState;
   mode: GameMode;
   mySymbol: CellValue;
+  frozen: boolean;
 
   newGame: () => void;
   setGame: (game: GameState) => void;
   setMode: (mode: GameMode) => void;
   setMySymbol: (symbol: CellValue) => void;
+  setFrozen: (frozen: boolean) => void;
   makeMove: (boardIndex: BoardIndex, cellIndex: CellIndex) => boolean;
   applyRemoteMove: (boardIndex: BoardIndex, cellIndex: CellIndex) => boolean;
 }
@@ -41,11 +43,13 @@ export const useGameStore = create<GameStore>((set, get) => ({
   game: createInitialState(),
   mode: GameMode.Hotseat,
   mySymbol: null,
+  frozen: false,
 
-  newGame: () => set({ game: createInitialState() }),
+  newGame: () => set({ game: createInitialState(), frozen: false }),
   setGame: (game) => set({ game }),
   setMode: (mode) => set({ mode }),
   setMySymbol: (symbol) => set({ mySymbol: symbol }),
+  setFrozen: (frozen) => set({ frozen }),
 
   makeMove: (boardIndex, cellIndex) =>
     _apply(get().game, boardIndex, cellIndex, set),
