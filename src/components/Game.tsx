@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from "react";
-import { useGameStore } from "../store/gameStore";
+import { useGameStore, GameMode } from "../store/gameStore";
 import { usePeer } from "../net/usePeer";
 import { PeerContext } from "../net/PeerContext";
 import type { NetMessage } from "../net/messages";
@@ -19,7 +19,7 @@ export function Game({ onBackToLobby, joinId }: GameProps) {
   const setMySymbol = useGameStore((state) => state.setMySymbol);
   const setGame = useGameStore((state) => state.setGame);
 
-  const isOnline = mode === "online";
+  const isOnline = mode === GameMode.Online;
   const isHost = isOnline && !joinId;
 
   const handleMessage = useCallback(

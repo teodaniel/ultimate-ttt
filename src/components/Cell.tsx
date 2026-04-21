@@ -1,4 +1,4 @@
-import { useGameStore } from "../store/gameStore";
+import { useGameStore, GameMode } from "../store/gameStore";
 import { usePeerContext } from "../net/PeerContext";
 import type { BoardIndex, CellIndex, CellValue } from "../game/types";
 
@@ -22,14 +22,14 @@ export function Cell({ boardIndex, cellIndex, value, disabled, isLastMove }: Cel
   const currentPlayer = useGameStore((state) => state.game.currentPlayer);
   const { send, connectionStatus } = usePeerContext();
 
-  const isReady = mode === "hotseat" || (connectionStatus === "connected" && mySymbol !== null);
-  const isMyTurn = mode === "hotseat" || currentPlayer === mySymbol;
+  const isReady = mode === GameMode.Hotseat || (connectionStatus === "connected" && mySymbol !== null);
+  const isMyTurn = mode === GameMode.Hotseat || currentPlayer === mySymbol;
   const isDisabled = disabled || value !== null || !isReady || !isMyTurn;
 
   function handleClick() {
     if (isDisabled) return;
     const applied = makeMove(boardIndex, cellIndex);
-    if (applied && mode === "online") {
+    if (applied && mode === GameMode.Online) {
       send({ type: "MOVE", payload: { boardIndex, cellIndex } });
     }
   }

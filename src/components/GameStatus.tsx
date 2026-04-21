@@ -1,4 +1,4 @@
-import { useGameStore } from "../store/gameStore";
+import { useGameStore, GameMode } from "../store/gameStore";
 import { usePeerContext } from "../net/PeerContext";
 
 const BOARD_NAMES = [
@@ -33,7 +33,7 @@ export function GameStatus() {
   const mySymbol = useGameStore((state) => state.mySymbol);
   const { connectionStatus, error } = usePeerContext();
 
-  const isOnline = mode === "online";
+  const isOnline = mode === GameMode.Online;
 
   function turnLabel() {
     if (isOnline && mySymbol) {

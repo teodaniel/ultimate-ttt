@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useGameStore } from "./store/gameStore";
+import { useGameStore, GameMode } from "./store/gameStore";
 import { useTheme } from "./hooks/useTheme";
 import { Lobby } from "./components/Lobby";
 import { Game } from "./components/Game";
@@ -10,7 +10,7 @@ type Screen = "lobby" | "game";
 const initialJoinId = new URLSearchParams(window.location.search).get("join");
 
 if (initialJoinId) {
-  useGameStore.setState({ mode: "online" });
+  useGameStore.setState({ mode: GameMode.Online });
 }
 
 function SunIcon() {

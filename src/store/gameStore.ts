@@ -7,14 +7,20 @@ import type {
   CellValue,
 } from "../game/types";
 
+export const GameMode = {
+  Hotseat: "hotseat",
+  Online: "online",
+} as const;
+export type GameMode = (typeof GameMode)[keyof typeof GameMode];
+
 interface GameStore {
   game: GameState;
-  mode: "hotseat" | "online";
+  mode: GameMode;
   mySymbol: CellValue;
 
   newGame: () => void;
   setGame: (game: GameState) => void;
-  setMode: (mode: "hotseat" | "online") => void;
+  setMode: (mode: GameMode) => void;
   setMySymbol: (symbol: CellValue) => void;
   makeMove: (boardIndex: BoardIndex, cellIndex: CellIndex) => boolean;
   applyRemoteMove: (boardIndex: BoardIndex, cellIndex: CellIndex) => boolean;
@@ -33,7 +39,7 @@ function _apply(
 
 export const useGameStore = create<GameStore>((set, get) => ({
   game: createInitialState(),
-  mode: "hotseat",
+  mode: GameMode.Hotseat,
   mySymbol: null,
 
   newGame: () => set({ game: createInitialState() }),

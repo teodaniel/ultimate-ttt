@@ -1,4 +1,4 @@
-import { useGameStore } from "../store/gameStore";
+import { useGameStore, GameMode } from "../store/gameStore";
 
 interface LobbyProps {
   onStartGame: () => void;
@@ -9,13 +9,13 @@ export function Lobby({ onStartGame }: LobbyProps) {
   const newGame = useGameStore((state) => state.newGame);
 
   function startHotseat() {
-    setMode("hotseat");
+    setMode(GameMode.Hotseat);
     newGame();
     onStartGame();
   }
 
   function startOnline() {
-    setMode("online");
+    setMode(GameMode.Online);
     newGame();
     onStartGame();
   }
