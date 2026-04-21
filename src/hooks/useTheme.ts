@@ -1,22 +1,17 @@
-import { useState, useEffect } from "react";
-
-type Theme = "light" | "dark";
-
-function getInitialTheme(): Theme {
-  const stored = localStorage.getItem("theme");
-  if (stored === "dark" || stored === "light") return stored;
-  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-}
+import { useEffect } from "react";
+import { useGameStore } from "../store/gameStore";
 
 export function useTheme() {
-  const [theme, setTheme] = useState<Theme>(getInitialTheme);
+  const theme = useGameStore((state) => state.theme);
+  const setTheme = useGameStore((state) => state.setTheme);
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", theme === "dark");
-    localStorage.setItem("theme", theme);
+    document.documentElement.classList.toggle("retro", theme === "retro");
   }, [theme]);
 
-  const toggle = () => setTheme((t) => (t === "dark" ? "light" : "dark"));
+  const cycle: Record<string, "light" | "dark" | "retro"> = { light: "dark", dark: "retro", retro: "light" };
+  const toggle = () => setTheme(cycle[theme]);
 
   return { theme, toggle };
 }

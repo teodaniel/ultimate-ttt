@@ -1,4 +1,9 @@
-@import url("https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Fredoka+One&family=VT323&display=swap");
 @import "tailwindcss";
 
 @variant dark (&:where(.dark, .dark *));
+@variant retro (&:where(.retro, .retro *));
+
+body {
+  scrollbar-gutter: stable;
+}

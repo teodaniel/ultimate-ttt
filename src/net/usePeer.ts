@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import type { NetMessage } from "./messages";
 import { useGameStore } from "../store/gameStore";
+import type { Mark } from "../game/types";
 
 export type ConnectionStatus =
   | "idle"
@@ -73,7 +74,10 @@ export function usePeer(
             connRef.current = conn;
             conn.on("open", () => {
               setConnectionStatus("connected");
-              conn.send({ type: "HELLO", payload: { mark: "O" } } satisfies NetMessage);
+              const hostMark: Mark = Math.random() < 0.5 ? "X" : "O";
+              const guestMark: Mark = hostMark === "X" ? "O" : "X";
+              useGameStore.getState().setMySymbol(hostMark);
+              conn.send({ type: "HELLO", payload: { mark: guestMark } } satisfies NetMessage);
               // Send current board state so a rejoining guest is always in sync
               conn.send({ type: "SYNC", payload: { game: useGameStore.getState().game } } satisfies NetMessage);
             });
